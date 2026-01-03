@@ -2,4 +2,4 @@
 port: 3000
 static_folder: ./render/public
 upload_folder: ./render/scripts
-auth_route: ./render/routes/auth.js
+auth_route: ./routes/auth.js
