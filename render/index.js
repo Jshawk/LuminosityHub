@@ -35,6 +35,15 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+
+// Landing page (public)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(
+    path.isAbsolute(config.static_folder) ? config.static_folder : path.join(__dirname, path.basename(config.static_folder)),
+    'landing.html')
+  );
+});
+
 // Serve static files
 app.use(express.static(path.isAbsolute(config.static_folder) ? config.static_folder : path.join(__dirname, path.basename(config.static_folder))));
 
@@ -47,14 +56,6 @@ app.get('/raw/:name', (req, res) => {
   if (!fs.existsSync(scriptPath)) return res.status(404).send('Script not found');
   res.type('text/plain');
   fs.createReadStream(scriptPath).pipe(res);
-});
-
-// Landing page (public)
-app.get('/', (req, res) => {
-  res.sendFile(path.join(
-    path.isAbsolute(config.static_folder) ? config.static_folder : path.join(__dirname, path.basename(config.static_folder)),
-    'landing.html')
-  );
 });
 
 // Require authentication for all other endpoints
