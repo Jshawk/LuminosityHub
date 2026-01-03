@@ -1,4 +1,5 @@
-// Delete script endpoint
+// ...existing code...
+// Delete script endpoint (after app is initialized)
 app.delete('/scripts/:name', (req, res) => {
   const scriptPath = path.join(
     path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)),
