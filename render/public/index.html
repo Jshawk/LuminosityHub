@@ -7,15 +7,25 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
 <body>
-  <h1>LuminosityHub Script Host</h1>
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    <label>Upload Lua Script: <input type="file" name="script" accept=".lua" required></label>
-    <button type="submit">Upload</button>
-  </form>
-  <div class="script-list">
-    <h2>Available Scripts</h2>
-    <div id="scripts"></div>
-  </div>
+  <section class="section">
+    <div class="container">
+      <h1 class="title has-text-warning">LuminosityHub Script Host</h1>
+      <form action="/upload" method="post" enctype="multipart/form-data" class="box mb-5">
+        <div class="field is-grouped is-align-items-center">
+          <div class="control">
+            <input class="input" type="file" name="script" accept=".lua" required>
+          </div>
+          <div class="control">
+            <button class="button is-warning" type="submit">Upload</button>
+          </div>
+        </div>
+      </form>
+      <div class="box">
+        <h2 class="subtitle">Available Scripts</h2>
+        <div id="scripts"></div>
+      </div>
+    </div>
+  </section>
   <script>
     async function fetchScripts() {
       const res = await fetch('/scripts');
@@ -25,8 +35,12 @@
       scripts.forEach(name => {
         const url = `${window.location.origin}/raw/${name}`;
         const item = document.createElement('div');
-        item.className = 'script-item';
-        item.innerHTML = `<span>${name}</span> <span class="url-box">${url}</span> <button class="copy-btn" onclick="navigator.clipboard.writeText('${url}')">Copy URL</button>`;
+        item.className = 'box is-flex is-justify-content-space-between is-align-items-center mb-2';
+        item.innerHTML = `
+          <span><strong>${name}</strong></span>
+          <span class="tag is-warning is-light" style="font-family: monospace;">${url}</span>
+          <button class="button is-small is-warning" onclick="navigator.clipboard.writeText('${url}')">Copy URL</button>
+        `;
         container.appendChild(item);
       });
     }
