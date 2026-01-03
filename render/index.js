@@ -26,7 +26,47 @@ const PORT = process.env.PORT || config.port || 3000;
 
 // Set up storage for uploaded scripts
 const storage = multer.diskStorage({
-// Delete script endpoint (must be after app is initialized)
+  destination: function (req, file, cb) {
+    cb(null, path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)));
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Serve static files
+app.use(express.static(path.isAbsolute(config.static_folder) ? config.static_folder : path.join(__dirname, path.basename(config.static_folder))));
+
+// Allow public access to /raw/:name
+app.get('/raw/:name', (req, res) => {
+  const scriptPath = path.join(
+    path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)),
+    req.params.name
+  );
+  if (!fs.existsSync(scriptPath)) return res.status(404).send('Script not found');
+  res.type('text/plain');
+  fs.createReadStream(scriptPath).pipe(res);
+});
+
+// Require authentication for all other endpoints
+app.use(auth);
+
+// Upload endpoint
+app.post('/upload', upload.single('script'), (req, res) => {
+  res.redirect('/');
+});
+
+// List scripts endpoint
+app.get('/scripts', (req, res) => {
+  fs.readdir(path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)), (err, files) => {
+    if (err) return res.status(500).json({ error: 'Failed to list scripts' });
+    res.json(files.filter(f => f.endsWith('.lua')));
+  });
+});
+
+// Delete script endpoint
 app.delete('/scripts/:name', (req, res) => {
   const scriptPath = path.join(
     path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)),
