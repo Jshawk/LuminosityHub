@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LuminosityHub Script Host</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; background: #181a1b; color: #eee; }
+    h1 { color: #ffb300; }
+    .script-list { margin-top: 2em; }
+    .script-item { margin-bottom: 0.5em; }
+    .url-box { background: #222; color: #ffb300; padding: 0.2em 0.5em; border-radius: 4px; font-family: monospace; }
+    .copy-btn { margin-left: 0.5em; }
+    form { margin-bottom: 2em; }
+    input[type=file] { color: #eee; }
+  </style>
+</head>
+<body>
+  <h1>LuminosityHub Script Host</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <label>Upload Lua Script: <input type="file" name="script" accept=".lua" required></label>
+    <button type="submit">Upload</button>
+  </form>
+  <div class="script-list">
+    <h2>Available Scripts</h2>
+    <div id="scripts"></div>
+  </div>
+  <script>
+    async function fetchScripts() {
+      const res = await fetch('/scripts');
+      const scripts = await res.json();
+      const container = document.getElementById('scripts');
+      container.innerHTML = '';
+      scripts.forEach(name => {
+        const url = `${window.location.origin}/raw/${name}`;
+        const item = document.createElement('div');
+        item.className = 'script-item';
+        item.innerHTML = `<span>${name}</span> <span class="url-box">${url}</span> <button class="copy-btn" onclick="navigator.clipboard.writeText('${url}')">Copy URL</button>`;
+        container.appendChild(item);
+      });
+    }
+    fetchScripts();
+  </script>
+</body>
+</html>
