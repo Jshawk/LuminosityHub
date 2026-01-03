@@ -40,9 +40,22 @@
           <span><strong>${name}</strong></span>
           <span class="tag is-warning is-light" style="font-family: monospace;">${url}</span>
           <button class="button is-small is-warning" onclick="navigator.clipboard.writeText('${url}')">Copy URL</button>
+          <button class="button is-small is-danger ml-2" onclick="deleteScript('${name}', this)">Delete</button>
         `;
         container.appendChild(item);
       });
+
+      window.deleteScript = async function(name, btn) {
+        if (!confirm('Delete script ' + name + '?')) return;
+        btn.disabled = true;
+        const res = await fetch(`/scripts/${encodeURIComponent(name)}`, { method: 'DELETE' });
+        if (res.ok) {
+          btn.closest('.box').remove();
+        } else {
+          alert('Failed to delete script');
+          btn.disabled = false;
+        }
+      }
     }
     fetchScripts();
   </script>

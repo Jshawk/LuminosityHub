@@ -1,3 +1,15 @@
+// Delete script endpoint
+app.delete('/scripts/:name', (req, res) => {
+  const scriptPath = path.join(
+    path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)),
+    req.params.name
+  );
+  if (!fs.existsSync(scriptPath)) return res.status(404).json({ error: 'Script not found' });
+  fs.unlink(scriptPath, err => {
+    if (err) return res.status(500).json({ error: 'Failed to delete script' });
+    res.json({ success: true });
+  });
+});
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -66,8 +78,17 @@ app.get('/scripts', (req, res) => {
   });
 });
 
-// Simple homepage
+
+// Landing page (public)
 app.get('/', (req, res) => {
+  res.sendFile(path.join(
+    path.isAbsolute(config.static_folder) ? config.static_folder : path.join(__dirname, path.basename(config.static_folder)),
+    'landing.html')
+  );
+});
+
+// Dashboard (auth required)
+app.get('/dashboard', auth, (req, res) => {
   res.sendFile(path.join(
     path.isAbsolute(config.static_folder) ? config.static_folder : path.join(__dirname, path.basename(config.static_folder)),
     'index.html')
