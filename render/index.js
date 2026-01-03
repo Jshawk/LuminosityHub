@@ -1,16 +1,16 @@
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const yaml = require('js-yaml');
+const config = yaml.load(fs.readFileSync(path.join(__dirname, 'server-config.yaml'), 'utf8'));
+
 // ...existing code...
+
 // Delete script endpoint (after app is initialized)
-app.delete('/scripts/:name', (req, res) => {
-  const scriptPath = path.join(
-    path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)),
-    req.params.name
-  );
-  if (!fs.existsSync(scriptPath)) return res.status(404).json({ error: 'Script not found' });
-  fs.unlink(scriptPath, err => {
-    if (err) return res.status(500).json({ error: 'Failed to delete script' });
-    res.json({ success: true });
-  });
-});
+// This must be after app is defined and all dependencies are loaded
+// Place this after all other app.* routes if needed
+
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
