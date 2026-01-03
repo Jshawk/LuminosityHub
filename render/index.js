@@ -4,7 +4,29 @@ const path = require('path');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const config = yaml.load(fs.readFileSync(path.join(__dirname, 'server-config.yaml'), 'utf8'));
-// Delete script endpoint (after app is initialized)
+
+// Internal basic auth middleware
+const auth = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="LuminosityHub"');
+    return res.status(401).send('Unauthorized');
+  }
+  const b64 = authHeader.split(' ')[1] || '';
+  const [user, pass] = Buffer.from(b64, 'base64').toString().split(':');
+  if (user === 'luminhub' && pass === 'luminhub') {
+    return next();
+  }
+  res.setHeader('WWW-Authenticate', 'Basic realm="LuminosityHub"');
+  return res.status(401).send('Unauthorized');
+};
+
+const app = express();
+const PORT = process.env.PORT || config.port || 3000;
+
+// Set up storage for uploaded scripts
+const storage = multer.diskStorage({
+// Delete script endpoint (must be after app is initialized)
 app.delete('/scripts/:name', (req, res) => {
   const scriptPath = path.join(
     path.isAbsolute(config.upload_folder) ? config.upload_folder : path.join(__dirname, path.basename(config.upload_folder)),
