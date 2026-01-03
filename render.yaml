@@ -3,23 +3,24 @@ previews:
   generation: automatic 
 
 services:
-	- type: web
-		name: luminosityhub-web
-		runtime: node
-		repo: https://github.com/jshawk/LuminosityHub
-		branch: main
-		rootDir: render
-		buildCommand: npm install
-		startCommand: node index.js
-		plan: free
-		region: oregon
-		envVars:
-			- key: NODE_ENV
-				value: production
-			- key: PORT
-				value: 3000
-		healthCheckPath: /
-		autoDeploy: true
+
+  - type: web
+    name: luminosityhub-web
+    runtime: node
+    repo: https://github.com/jshawk/LuminosityHub
+    branch: main
+    rootDir: render
+    buildCommand: npm install
+    startCommand: node index.js
+    plan: free
+    region: oregon
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+    healthCheckPath: /
+    autoDeploy: true
 
 databases: []
 
