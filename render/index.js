@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const config = yaml.load(fs.readFileSync(path.join(__dirname, 'server-config.yaml'), 'utf8'));
-const auth = require(path.isAbsolute(config.auth_route) ? config.auth_route : path.join(__dirname, path.basename(config.auth_route)));
+const auth = require(path.isAbsolute(config.auth_route) ? config.auth_route : path.join(__dirname, config.auth_route));
 
 const app = express();
 const PORT = process.env.PORT || config.port || 3000;
